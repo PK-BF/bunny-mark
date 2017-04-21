@@ -95,7 +95,7 @@ BunnyMark.prototype.ready = function(startBunnyCount)
 {
     // Default bunnies to 100000
     if (typeof startBunnyCount === 'undefined') {
-        startBunnyCount = 100000;
+        startBunnyCount = 100;
     }
 
     this.domElement.removeClass('hidden');
@@ -142,6 +142,17 @@ BunnyMark.prototype.ready = function(startBunnyCount)
         gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS), 
         this.textures.length
     );
+
+    // Blend mode select
+    var blendMode = $("#blendMode");
+    $.each(PIXI.BLEND_MODES, function(mode, value) {
+        blendMode.append($('<option>', {
+            value: value,
+            text: mode
+        }));
+    });
+
+    blendMode.on('change', this.changeBlendMode.bind(this));
 
     // Create the sounder
     this.counter = $("#counter");
@@ -190,7 +201,18 @@ BunnyMark.prototype.addBunnies = function(num)
         this.stage.addChild(bunny);
         this.count++;
     }
+    this.changeBlendMode();
     this.counter.html(this.count + " BUNNIES");
+};
+
+BunnyMark.prototype.changeBlendMode = function()
+{
+    var blendMode = parseInt($("#blendMode option:selected").val() || 0);
+
+    for (var i = 0; i < this.count; i++)
+    {
+        this.stage.children[0].blendMode = blendMode;
+    }
 };
 
 /**
